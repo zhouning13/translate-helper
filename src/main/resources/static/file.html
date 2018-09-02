@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>MV翻译机-游戏列表</title>
+	
+	
+	<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u">
+	<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet" crossorigin="anonymous" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp">
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" crossorigin="anonymous">
+	<link href="https://cdn.bootcss.com/gentelella/1.4.0/css/custom.min.css" rel="stylesheet" crossorigin="anonymous">
+	
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"></script>
+	<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+
+	<script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+	
+	<link rel="stylesheet" href="/componet/sweetalert/sweetalert.css">
+	<script src="/componet/sweetalert/sweetalert.js"></script>
+	
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-dark">
+		<a class="navbar-brand" href="./index.html">MV翻译机-游戏详情-文件翻译</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<!--<li class="nav-item active">
+					<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Features</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Pricing</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link disabled" href="#">Disabled</a>
+				</li>-->
+			</ul>
+		</div>
+	</nav>
+	<div class="jumbotron">
+      <div class="container">
+        <h1 id="game_title">MV翻译机-游戏文件列表</h1>
+        <p id="game_detail">
+        	翻译情况：
+        	段落数 <span v-html="fileInfo.trans+'/'+fileInfo.total">加载中... </span>
+        	完成率 <span id="file_percent" v-html="fileInfo.percent+'%'">加载中... </span>
+        </p>
+      </div>
+    </div>
+    
+    
+    
+    <!-- actor 角色 -->
+    <div class="container file_panel" id="actor" hidden>
+    <template v-for="( actor , index) in content" v-if="actor">
+		<div class="form-group row">
+			<label class="col-sm-12 col-form-label">
+				角色{{index}} 
+			</label>
+		</div>
+		<div class="form-group row">
+		
+		<!-- 角色名字部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="actor.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /角色名字部分--> 
+		
+		<!-- profile部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">profile</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label> -->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'profile_'+index+'_value'" type="text" class=" form-control" placeholder="未填写profile" v-bind:value="actor.profile"/>
+				<input v-bind:id="'profile_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].profile'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="profile" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /profile部分--> 
+		
+		<!-- 昵称部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">昵称</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'nickname_'+index+'_value'" type="text" class=" form-control" placeholder="未填写昵称" v-bind:value="actor.nickname"/>
+				<input v-bind:id="'nickname_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].nickname'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="nickname" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /昵称部分--> 
+			
+		</div>
+	</template>
+    </div>
+    <!-- /actor 角色 -->
+    
+     <!-- animation 动画-->
+    <div class="container file_panel" id="animation" hidden>
+    <div class="form-group row">
+    <template v-for="( animation , index) in content" v-if="animation">
+    	
+    	<!-- 动画名字部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="animation.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /动画名字部分--> 
+		
+    </template>
+    </div>
+    </div>
+    <!-- /animation 动画 -->
+    
+    
+    <!-- armor 装备 -->
+    <div class="container file_panel" id="armor" hidden>
+    <template v-for="( armor , index) in content" v-if="armor">
+		<div class="form-group row">
+			<label class="col-xs-12 col-sm-12 col-md-12 col-lg-1 col-form-label">
+				装备{{index}} 
+			</label>
+		<!-- 装备名字部分--> 
+			<label class="col-xs-2 col-sm-2 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-8 col-sm-8 col-md-8 col-lg-3 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="armor.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /装备名字部分--> 
+			
+		<!-- 描述部分--> 
+			<label class="col-xs-2 col-sm-2 col-md-2 col-lg-1 col-form-label">描述</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-8 col-sm-8 col-md-8 col-lg-4 ">
+				<input v-bind:id="'description_'+index+'_value'" type="text" class=" form-control" placeholder="未填写描述" v-bind:value="armor.description"/>
+				<input v-bind:id="'description_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].description'" />
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="description" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /描述部分--> 
+			
+		</div>
+	</template>
+    </div>
+    <!-- /armor 装备 -->
+    
+    <!-- classes 职业 -->
+    <div class="container file_panel" id="classes" hidden>
+    <div class="form-group row">
+    <template v-for="( classes , index) in content" v-if="classes">
+    	
+    	<!-- 动画名字部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">职业名称</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写职业名称" v-bind:value="classes.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /动画名字部分--> 
+		
+    </template>
+    </div>
+    </div>
+    <!-- /classes 职业  -->
+    
+    <!-- event 公共事件  TODO -->
+    <div class="container file_panel" id="event" hidden>
+    	 <template v-for="( event , index) in content" v-if="event">
+    	<!-- 事件 -->
+    	<div class="form-group row">
+			<label class="col-xs-12 col-sm-4 col-md-2 col-lg-1 col-form-label">
+				事件{{index}} 
+			</label>
+			<label class="col-xs-12 col-sm-6 col-md-9 col-lg-10 col-form-label">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="event.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</label>
+			<div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		</div>
+		<!-- /事件 -->
+		
+		<!-- 事件详细 -->
+		<div class="form-group row">
+			<template v-for="( l , l_index) in event.list" v-if="l">
+				<template v-for="( param , param_index) in l.parameters" v-if="param">
+					<template v-if="typeof param == 'string'">
+						<label class="col-xs-12 col-sm-4 col-md-2 col-lg-1 col-form-label">
+							&nbsp;
+						</label>
+						<label class="col-xs-12 col-sm-6 col-md-9 col-lg-10 col-form-label">
+							<input v-bind:id="'param_'+index+'_'+l_index+'_'+param_index+'_value'" type="text" class=" form-control" placeholder="未填写" v-bind:value="param"/>
+							<input v-bind:id="'param_'+index+'_'+l_index+'_'+param_index+'_path'" type="hidden" v-bind:value="'$['+index+'].list['+l_index+'].parameters['+param_index+']'" />
+						</label>
+						<div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 ">
+							<button type="submit" data-name="param" v-bind:data-index="index+'_'+l_index+'_'+param_index" class="translate btn btn-primary">翻译</button>
+						</div>
+					</template>
+				</template>
+			</template>
+		</div>
+		<!-- /事件详细 -->
+    	</template>
+    </div>
+    <!-- /event 公共事件 -->
+    
+    <!-- enemy 敌人 -->
+    <div class="container file_panel" id="enemy" hidden>
+    <div class="form-group row">
+    <template v-for="( enemy , index) in content" v-if="enemy">
+    	
+    	<!-- 动画名字部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写职业名称" v-bind:value="enemy.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /动画名字部分--> 
+		
+    </template>
+    </div>
+    </div>
+    <!-- /enemy 敌人   -->
+    
+     <!-- item 装备 -->
+    <div class="container file_panel" id="item" hidden>
+    <template v-for="( item , index) in content" v-if="item">
+		<div class="form-group row">
+			<label class="col-xs-12 col-sm-12 col-md-12 col-lg-1 col-form-label">
+				装备{{index}} 
+			</label>
+		<!-- 装备名字部分--> 
+			<label class="col-xs-2 col-sm-2 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-8 col-sm-8 col-md-8 col-lg-3 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="item.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /装备名字部分--> 
+			
+		<!-- 描述部分--> 
+			<label class="col-xs-2 col-sm-2 col-md-2 col-lg-1 col-form-label">描述</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-8 col-sm-8 col-md-8 col-lg-4 ">
+				<input v-bind:id="'description_'+index+'_value'" type="text" class=" form-control" placeholder="未填写描述" v-bind:value="item.description"/>
+				<input v-bind:id="'description_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].description'" />
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="description" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /描述部分--> 
+			
+		</div>
+	</template>
+    </div>
+    <!-- /item 装备 -->
+    
+    
+    <!-- 地图索引-->
+     <!-- enemy 敌人 -->
+    <div class="container file_panel" id="mapInfo" hidden>
+    <div class="form-group row">
+    <template v-for="( mapInfo , index) in content" v-if="mapInfo">
+    	
+    	<!-- 动画名字部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="mapInfo.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /动画名字部分--> 
+		
+    </template>
+    </div>
+    </div>
+    <!-- /enemy 敌人   -->
+    <!-- /地图 -->
+    
+    <!-- 地图 -->
+    <div class="container file_panel" id="map" hidden>
+    <template v-for="( event , index) in content.events" v-if="event">
+    	<!-- 事件 -->
+    	<div class="form-group row">
+			<label class="col-xs-12 col-sm-4 col-md-2 col-lg-1 col-form-label">
+				事件{{index}} 
+			</label>
+			<label class="col-xs-12 col-sm-6 col-md-9 col-lg-10 col-form-label">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="event.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$.events['+index+'].name'" />
+			</label>
+			<div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		</div>
+		<!-- /事件 -->
+		
+		<!-- 事件详细 -->
+		<div class="form-group row">
+			<template v-for="( page , p_index) in event.pages" v-if="page">
+				<template v-for="( l , l_index) in page.list" v-if="l">
+					<template v-for="( param , param_index) in l.parameters" v-if="param">
+						<template v-if="typeof param == 'string'">
+							<label class="col-xs-12 col-sm-4 col-md-2 col-lg-1 col-form-label">
+								&nbsp;
+							</label>
+							<label class="col-xs-12 col-sm-6 col-md-9 col-lg-10 col-form-label">
+								<input v-bind:id="'param_'+index+'_'+p_index+'_'+l_index+'_'+param_index+'_value'" type="text" class=" form-control" placeholder="未填写" v-bind:value="param"/>
+								<input v-bind:id="'param_'+index+'_'+p_index+'_'+l_index+'_'+param_index+'_path'" type="hidden" v-bind:value="'$.events['+index+'].pages['+p_index+'].list['+l_index+'].parameters['+param_index+']'" />
+							</label>
+							<div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 ">
+								<button type="submit" data-name="param" v-bind:data-index="index+'_'+p_index+'_'+l_index+'_'+param_index" class="translate btn btn-primary">翻译</button>
+							</div>
+						</template>
+					</template>
+				</template>
+			</template>
+		</div>
+		<!-- /事件详细 -->
+    </template>
+    </div>
+    <!-- /地图 -->
+    
+
+    <!-- skill 技能  TODO -->
+    <div class="container file_panel" id="skill" hidden>
+    </div>
+    <!-- /skill 技能 -->
+    
+    <!-- state 状态  TODO -->
+    <div class="container file_panel" id="state" hidden>
+    </div>
+    <!-- /state 状态 -->
+    
+    <!-- system 系统  TODO -->
+    <div class="container file_panel" id="system" hidden>
+    </div>
+    <!-- /system 系统 -->
+    
+    <!-- tileset 地形  TODO -->
+    <div class="container file_panel" id="tileset" hidden>
+    <div class="form-group row">
+    <template v-for="( tileset , index) in content" v-if="tileset">
+		<!-- 地表名字部分--> 
+			<label class="col-xs-4 col-sm-4 col-md-2 col-lg-1 col-form-label">名字</label>
+			<!-- <label class="col-xs-4 col-sm-4 col-md-2 col-lg-2 col-form-label">参考原文</label>-->
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-2 ">
+				<input v-bind:id="'name_'+index+'_value'" type="text" class=" form-control" placeholder="未填写名字" v-bind:value="tileset.name"/>
+				<input v-bind:id="'name_'+index+'_path'" type="hidden" v-bind:value="'$['+index+'].name'" />
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-2 col-lg-1 ">
+				<button type="submit" data-name="name" v-bind:data-index="index" class="translate btn btn-primary">翻译</button>
+			</div>
+		<!-- /地表名字部分--> 
+	</template>
+    </div>
+    </div>
+    <!-- /tileset 地形 -->
+    
+    <!-- troop 敌群  TODO -->
+    <div class="container file_panel" id="troop" hidden>
+    </div>
+    <!-- /troop 敌群 -->
+    
+    <!-- weapon 武器  TODO -->
+    <div class="container file_panel" id="weapon" hidden>
+    </div>
+    <!-- /weapon 武器 -->
+    
+	<footer>
+		<p>&copy; 2018 GORPG汉化组 冷凝沙漠</p>
+	</footer>   
+     
+	<script type="text/javascript">
+
+	$.when( $.ready ).then(function() {
+	
+		var hash = window.location.hash.substr(1).split("_");
+		var gameId = hash[0];
+		var fileName = hash[1];
+		//$("#gameList").empty();
+		
+		// 翻译功能
+		var translate = function(){
+			var $this = $(this),
+				name = $this.data("name"),
+				index = $this.data("index"),
+				value = $("#"+name+"_"+index+"_value").val(),
+				path = $("#"+name+"_"+index+"_path").val(),
+				$percent = $("#file_percent");
+			//console.log(" name:"+name+" \r\n index:"+index+" \r\n value:"+value+" \r\n path:"+path);
+			$.when($.ajax({
+				url:"./api/v1/translate",
+				data:{
+					"gameId":gameId,
+					"fileName":fileName,
+					"path":path,
+					"value":value
+				},
+				type:"POST",
+				dataType:"json"
+			})).then(function(data) {
+				if(data.code==200){
+					sweetAlert("翻译完毕！", "您的翻译已保存！","success");
+					//$percent.html(data.result+"%");
+				}else{
+					sweetAlert("翻译失败！", data.message,"error");
+				}
+				
+			});
+			return false;
+		};
+		
+		// 初始加载页面
+		$.when(
+			$.ajax({
+				url:"./mv/"+gameId+"/game_simple.json", 
+				dataType:"json"
+			}),
+			$.ajax({
+				url:"./mv/"+gameId+"/chinese/www/"+fileName, 
+				dataType:"json"
+			})
+		).then(function(gameResponse, fileResponse) {
+			var gameData = gameResponse[0],
+				fileInfo = gameData.fileMap[fileName],
+				template = fileInfo.template;
+			$("#game_title").html(gameData.cname+" - "+fileInfo.name);
+			new Vue({
+				el:"#game_detail",
+				data:{
+					fileInfo:fileInfo
+				}
+			});
+			
+			new Vue({
+				el: '#'+template,
+				"data": {
+					"content": fileResponse[0]		
+				}
+			});
+			$('#'+template).removeAttr("hidden");
+			$("button.translate").click(translate);
+			
+		});
+	});
+	</script>
+</body>
+</html>
