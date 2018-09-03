@@ -1,10 +1,7 @@
-app:
+app: 
   name: translate-helper
   description: ${app.name} is a application for rpg mv translater
 server:
   port: 8000
-game: 
-  base:
-    path: file:E://mv/
-    #path: file:/home/translate/mv/
+
     

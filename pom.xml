@@ -17,6 +17,8 @@
 		<start-class>club.gorpg.helper.application.Application</start-class>
 		<deploy.location>.\target\deploy</deploy.location>
 	</properties>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -56,6 +58,16 @@
 	</dependencies>
 	<!-- Package as an executable jar -->
 	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>application.properties</include>
+				</includes>
+			</resource>
+
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -75,5 +87,21 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<profiles>
+		<profile>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<id>dev</id>
+			<properties>
+				<profileActive>dev</profileActive>
+			</properties>
+		</profile>
+		<profile>
+			<id>product</id>
+			<properties>
+				<profileActive>product</profileActive>
+			</properties>
+		</profile>
+	</profiles>
 </project>
