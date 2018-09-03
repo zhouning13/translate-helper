@@ -16,6 +16,7 @@
 		<maven.site.directory>${basedir}/src/site</maven.site.directory>
 		<start-class>club.gorpg.helper.application.Application</start-class>
 		<deploy.location>.\target\deploy</deploy.location>
+		<profileActive>dev</profileActive>
 	</properties>
 
 
@@ -66,7 +67,14 @@
 					<include>application.properties</include>
 				</includes>
 			</resource>
-
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>application.yml</include>
+					<include>application-${profileActive}.yml</include>
+				</includes>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
