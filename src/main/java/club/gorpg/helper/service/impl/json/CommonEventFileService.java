@@ -64,9 +64,10 @@ public class CommonEventFileService implements IJsonFileService {
 								fm.add("$[" + i + "].list[" + j + "].parameters[" + k + "]",
 										new SectionInfo(p.textValue(), "公共事件" + i + "的" + j + "组" + k + "号参数"));
 							}
+							k++;
 						}
-						j++;
 					}
+					j++;
 				}
 
 			}
