@@ -3,6 +3,12 @@ package club.gorpg.helper.service;
 import club.gorpg.helper.exceptions.TranslateException;
 import club.gorpg.helper.model.TranslateResult;
 
+/**
+ * 游戏元数据处理
+ * 
+ * @author 周宁
+ *
+ */
 public interface IGameMetaService {
 
 	/**

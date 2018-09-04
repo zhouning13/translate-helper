@@ -1,7 +1,11 @@
 package club.gorpg.helper.service;
 
 import club.gorpg.helper.exceptions.TranslateException;
-
+/**
+ * 游戏文件处理
+ * @author 周宁
+ *
+ */
 public interface IGameFileService {
 	/**
 	 * 翻译，将内容写到翻译后的chinese文件中
