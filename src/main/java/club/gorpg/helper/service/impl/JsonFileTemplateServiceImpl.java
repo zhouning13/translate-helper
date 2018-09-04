@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 import club.gorpg.helper.model.FileMeta;
 import club.gorpg.helper.model.GameMeta;
@@ -28,7 +30,7 @@ public class JsonFileTemplateServiceImpl implements IFileTemplateService {
 	private ApplicationContext applicationContext;
 	private Collection<IJsonFileService> jsonFileServices;
 
-	public List<FileMeta> handle(String fileName, Path path) {
+	public List<FileMeta> handle(String fileName, Path path, Path chinesePath) {
 		if (!path.toString().endsWith(".json")) {
 			return null;
 		}
@@ -36,7 +38,8 @@ public class JsonFileTemplateServiceImpl implements IFileTemplateService {
 			if (jsonFileService.accept(fileName)) {
 				try {
 					JsonNode tn = om.readTree(path.toFile());
-					List<FileMeta> fms = jsonFileService.getFileMeta(fileName, tn);
+					DocumentContext chinese = JsonPath.parse(chinesePath.toFile());
+					List<FileMeta> fms = jsonFileService.getFileMeta(fileName, tn, chinese);
 					if (fms == null || fms.isEmpty()) {
 						logger.error("初始化文件异常，处理类表示接受文件，但缺失处理结果，文件名：" + fileName + "， 处理类："
 								+ jsonFileService.getClass().getName());

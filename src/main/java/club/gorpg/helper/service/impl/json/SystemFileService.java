@@ -9,23 +9,22 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
+import com.jayway.jsonpath.DocumentContext;
 
 import club.gorpg.helper.model.FileIcon;
 import club.gorpg.helper.model.FileMeta;
-import club.gorpg.helper.model.FileMeta.SectionInfo;
 import club.gorpg.helper.model.GameMeta;
 import club.gorpg.helper.model.GameMeta.TreeModel;
-import club.gorpg.helper.service.impl.IJsonFileService;
 
 @Service
-public class SystemFileService implements IJsonFileService {
+public class SystemFileService extends AbstractFileService {
 	private static final String FILE_NAME = "data/System.json";
 
 	public boolean accept(String fileName) {
 		return fileName.equals(FILE_NAME);
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode root) {
+	public List<FileMeta> getFileMeta(String fileName, JsonNode root, DocumentContext chinese) {
 		FileMeta fm = new FileMeta(FILE_NAME, FileIcon.system, "系统");
 
 		JsonNode terms = root.get("terms");
@@ -36,7 +35,7 @@ public class SystemFileService implements IJsonFileService {
 					Entry<String, JsonNode> e = fields.next();
 					JsonNode n = e.getValue();
 					if (n != null && !n.isNull()) {
-						fm.add("$.terms.messages." + e.getKey(), new SectionInfo(n.textValue(), "系统消息" + e.getKey()));
+						add(fm, "$.terms.messages." + e.getKey(), "系统消息" + e.getKey(), n.textValue(), chinese);
 					}
 				}
 			}
@@ -46,7 +45,7 @@ public class SystemFileService implements IJsonFileService {
 				int i = 0;
 				for (JsonNode st : params) {
 					if (st != null && !st.isNull()) {
-						fm.add("$.terms.params[" + i + "]", new SectionInfo(st.textValue(), "参数" + i));
+						add(fm, "$.terms.params[" + i + "]", "参数" + i, st.textValue(), chinese);
 					}
 					i++;
 				}
@@ -57,7 +56,7 @@ public class SystemFileService implements IJsonFileService {
 				int i = 0;
 				for (JsonNode st : commands) {
 					if (st != null && !st.isNull()) {
-						fm.add("$.terms.commands[" + i + "]", new SectionInfo(st.textValue(), "操作" + i));
+						add(fm, "$.terms.commands[" + i + "]", "操作" + i, st.textValue(), chinese);
 					}
 					i++;
 				}
@@ -68,7 +67,7 @@ public class SystemFileService implements IJsonFileService {
 				int i = 0;
 				for (JsonNode st : basic) {
 					if (st != null && !st.isNull()) {
-						fm.add("$.terms.basic[" + i + "]", new SectionInfo(st.textValue(), "基础属性" + i));
+						add(fm, "$.terms.basic[" + i + "]", "基础属性" + i, st.textValue(), chinese);
 					}
 					i++;
 				}
@@ -80,7 +79,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode st : weaponTypes) {
 				if (st != null && !st.isNull()) {
-					fm.add("$.weaponTypes[" + i + "]", new SectionInfo(st.textValue(), "武器类型" + i));
+					add(fm, "$.weaponTypes[" + i + "]", "武器类型" + i, st.textValue(), chinese);
 				}
 				i++;
 			}
@@ -91,7 +90,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode st : variables) {
 				if (st != null && !st.isNull()) {
-					fm.add("$.variables[" + i + "]", new SectionInfo(st.textValue(), ""));
+					add(fm, "$.variables[" + i + "]", "变量" + i, st.textValue(), chinese);
 				}
 				i++;
 			}
@@ -102,7 +101,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode st : switches) {
 				if (st != null && !st.isNull()) {
-					fm.add("$.switches[" + i + "]", new SectionInfo(st.textValue(), ""));
+					add(fm, "$.switches[" + i + "]", "开关" + i, st.textValue(), chinese);
 				}
 				i++;
 			}
@@ -113,7 +112,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode st : skillTypes) {
 				if (st != null && !st.isNull()) {
-					fm.add("$.skillTypes[" + i + "]", new SectionInfo(st.textValue(), "技能类型" + i));
+					add(fm, "$.skillTypes[" + i + "]", "技能类型" + i, st.textValue(), chinese);
 				}
 				i++;
 			}
@@ -124,7 +123,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode et : equipTypes) {
 				if (et != null && !et.isNull()) {
-					fm.add("$.equipTypes[" + i + "]", new SectionInfo(et.textValue(), "装备类型" + i));
+					add(fm, "$.equipTypes[" + i + "]", "装备类型" + i, et.textValue(), chinese);
 				}
 				i++;
 			}
@@ -135,7 +134,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode e : elements) {
 				if (e != null && !e.isNull()) {
-					fm.add("$.elements[" + i + "]", new SectionInfo(e.textValue(), "元素属性" + i));
+					add(fm, "$.elements[" + i + "]", "元素属性" + i, e.textValue(), chinese);
 				}
 				i++;
 			}
@@ -146,7 +145,7 @@ public class SystemFileService implements IJsonFileService {
 			int i = 0;
 			for (JsonNode at : armorTypes) {
 				if (at != null && !at.isNull()) {
-					fm.add("$.armorTypes[" + i + "]", new SectionInfo(at.textValue(), "装甲类型" + i));
+					add(fm, "$.armorTypes[" + i + "]", "装甲类型" + i, at.textValue(), chinese);
 				}
 				i++;
 			}

@@ -8,18 +8,17 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.jsonpath.DocumentContext;
 
 import club.gorpg.helper.model.FileIcon;
 import club.gorpg.helper.model.FileMeta;
-import club.gorpg.helper.model.FileMeta.SectionInfo;
 import club.gorpg.helper.model.GameMeta;
 import club.gorpg.helper.model.GameMeta.TreeModel;
-import club.gorpg.helper.service.impl.IJsonFileService;
 
 @Service
-public class CommonEventFileService implements IJsonFileService {
+public class CommonEventFileService extends AbstractFileService {
 	private static final String FILE_NAME = "data/CommonEvents.json";
-	private static final int BLOCK_SIZE = 20;
+	private static final int BLOCK_SIZE = 400;
 
 	public boolean accept(String fileName) {
 		if (fileName.equals(FILE_NAME))
@@ -33,16 +32,23 @@ public class CommonEventFileService implements IJsonFileService {
 
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn) {
+	private FileMeta add(List<FileMeta> fms, FileMeta fm, int count, String path, String name, String foreign,
+			DocumentContext chinese) {
+		if (count % BLOCK_SIZE == 0) {
+			int index = count / BLOCK_SIZE;
+			fm = new FileMeta(FILE_NAME, "data/CommonEvents" + index + ".json", FileIcon.event, "公共事件" + index);
+			fms.add(fm);
+		}
+		add(fm, path, name, foreign, chinese);
+		return fm;
+	}
+
+	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese) {
 		List<FileMeta> fms = new ArrayList<>();
 		FileMeta fm = null;
 		int i = 0;
+		int count = 0;
 		for (JsonNode n : tn) {
-			if (i % BLOCK_SIZE == 0) {
-				int index = i / BLOCK_SIZE;
-				fm = new FileMeta(FILE_NAME, "data/CommonEvents" + index + ".json", FileIcon.event, "公共事件" + index);
-				fms.add(fm);
-			}
 
 			if (n != null && !n.isNull()) {
 				// fm.add("$[" + i + "].name", new SectionInfo(n.get("name").textValue(), "公共事件"
@@ -61,8 +67,10 @@ public class CommonEventFileService implements IJsonFileService {
 					if (code == 401) {
 						// 401 文本类
 						JsonNode text = node.get("parameters").get(0);
-						fm.add("$.events[" + i + "].list[" + j + "].parameters[0]",
-								new SectionInfo(text.asText(), "公共事件" + i + "“" + eventName + "”的" + j + "行的文本"));
+						String path = "$[" + i + "].list[" + j + "].parameters[0]";
+						String name = "公共事件" + i + "“" + eventName + "”的" + j + "行的文本";
+						fm = add(fms, fm, count, path, name, text.textValue(), chinese);
+						count++;
 					}
 
 					if (code == 102) {
@@ -72,9 +80,10 @@ public class CommonEventFileService implements IJsonFileService {
 							int m = 0;
 							for (JsonNode param : params) {
 								if (param != null && !param.isNull()) {
-									fm.add("$.events[" + i + "].list[" + j + "].parameters[0][" + m + "]",
-											new SectionInfo(param.textValue(),
-													"公共事件" + i + "“" + eventName + "”的" + j + "行选择的第" + m + "个选项"));
+									String path = "$[" + i + "].list[" + j + "].parameters[0][" + m + "]";
+									String name = "公共事件" + i + "“" + eventName + "”的" + j + "行选择的第" + m + "个选项";
+									fm = add(fms, fm, count, path, name, param.textValue(), chinese);
+									count++;
 								}
 								m++;
 							}
@@ -87,8 +96,10 @@ public class CommonEventFileService implements IJsonFileService {
 						JsonNode params = node.get("parameters");
 						JsonNode index = params.get(0);
 						JsonNode text = params.get(1);
-						fm.add("$.events[" + i + "].list[" + j + "].parameters[1]", new SectionInfo(text.textValue(),
-								"事件" + i + "“" + eventName + "”的" + j + "行选择的第" + index + "个选项，需与前面的选项翻译一致！"));
+						String path = "$[" + i + "].list[" + j + "].parameters[1]";
+						String name = "事件" + i + "“" + eventName + "”的" + j + "行选择的第" + index + "个选项，需与前面的选项翻译一致！";
+						fm = add(fms, fm, count, path, name, text.textValue(), chinese);
+						count++;
 					}
 					j++;
 				}

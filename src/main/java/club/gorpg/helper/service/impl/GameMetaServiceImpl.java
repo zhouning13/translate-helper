@@ -80,10 +80,11 @@ public class GameMetaServiceImpl implements IGameMetaService {
 			throw new TranslateException("初始化失败，进度文件被其他文件夹占据！");
 		}
 
+		// meta文件
 		final GameMeta gameMeta;
 		if (Files.exists(gameMetaFile) && Files.isReadable(gameMetaFile)) {
 			try {
-
+				// 已有meta文件，读取meta文件
 				gameMeta = om.readValue(gameMetaFile.toFile(), GameMeta.class);
 				gameMeta.setId(gameId);
 				gameMeta.setTree(new ArrayList<>());
@@ -93,6 +94,7 @@ public class GameMetaServiceImpl implements IGameMetaService {
 			}
 		} else {
 			try {
+				// 没有meta文件，根据 game_list.json 生成新meta
 				GameListMeta gameListMeta = om.readValue(ResourceUtils.getFile(basePath + "game_list.json"),
 						GameListMeta.class);
 				SingleGameMeta sgm = gameListMeta.getGame().get(gameId);
@@ -115,11 +117,12 @@ public class GameMetaServiceImpl implements IGameMetaService {
 		}
 
 		try {
-
+			// 首轮文件扫描
 			Files.walk(gameForeignFolder).forEach(path -> {
 				Path chinesePath = gameChineseFolder.resolve(gameForeignFolder.relativize(path));
 				Map<String, FileMeta> fileMap = gameMeta.getFileMap();
 				if (Files.isDirectory(path)) {
+					// 创建对应目录
 					if (Files.exists(chinesePath)) {
 						return;
 					}
@@ -131,6 +134,7 @@ public class GameMetaServiceImpl implements IGameMetaService {
 					}
 
 				} else {
+					// 不存在则复制文件
 					if (!Files.exists(chinesePath)) {
 						try {
 							Files.copy(path, chinesePath);
@@ -139,9 +143,10 @@ public class GameMetaServiceImpl implements IGameMetaService {
 							return;
 						}
 					}
+					// 逐个文件寻求处理器模板。
 					for (IFileTemplateService service : fileTemplateServices) {
 						String fileName = gameWWWFolder.relativize(path).toString().replaceAll("\\\\", "/");
-						List<FileMeta> fms = service.handle(fileName, path);
+						List<FileMeta> fms = service.handle(fileName, path, chinesePath);
 						if (fms != null) {
 							System.out.println();
 							fms.forEach(f -> {
@@ -152,7 +157,7 @@ public class GameMetaServiceImpl implements IGameMetaService {
 					}
 				}
 			});
-
+			// 二轮扫描
 			Files.walk(gameForeignFolder).sorted().forEach(path -> {
 				if (!Files.isDirectory(path)) {
 					for (IFileTemplateService service : fileTemplateServices) {
@@ -169,13 +174,11 @@ public class GameMetaServiceImpl implements IGameMetaService {
 		gameMeta.recount();
 
 		final Path gameMetaFolder = gameBaseFolder.resolve("meta");
-		int i = 0;
 		for (FileMeta fm : gameMeta.getFileMap().values()) {
 			try {
 				if (fm == null || fm.getFileName() == null) {
 					continue;
 				}
-				i++;
 				Path metaFile = gameMetaFolder.resolve(fm.getFileName());
 				File parent = metaFile.getParent().toFile();
 				if (!parent.exists()) {

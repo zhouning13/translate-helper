@@ -8,15 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
+import com.jayway.jsonpath.DocumentContext;
 
 import club.gorpg.helper.model.FileIcon;
 import club.gorpg.helper.model.FileMeta;
-import club.gorpg.helper.model.FileMeta.SectionInfo;
 import club.gorpg.helper.model.GameMeta;
-import club.gorpg.helper.service.impl.IJsonFileService;
 
 @Service
-public class MapFileService implements IJsonFileService {
+public class MapFileService extends AbstractFileService {
 
 	public boolean accept(String fileName) {
 		if (!fileName.startsWith("data/Map"))
@@ -25,7 +24,7 @@ public class MapFileService implements IJsonFileService {
 		return NumberUtils.isDigits(mapNumber);
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn) {
+	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese) {
 		String mapNumber = StringUtils.substringBetween(fileName, "data/Map", ".json");
 		FileMeta fm = new FileMeta(fileName, FileIcon.map, "地图" + mapNumber);
 
@@ -53,10 +52,10 @@ public class MapFileService implements IJsonFileService {
 											if (code == 401) {
 												// 401 文本类
 												JsonNode text = l.get("parameters").get(0);
-												fm.add("$.events[" + i + "].pages[" + j + "].list[" + k
-														+ "].parameters[0]",
-														new SectionInfo(text.asText(), "事件" + i + "“" + eventName + "”的"
-																+ j + "页" + k + "行的文本"));
+												String path = "$.events[" + i + "].pages[" + j + "].list[" + k
+														+ "].parameters[0]";
+												String name = "事件" + i + "“" + eventName + "”的" + j + "页" + k + "行的文本";
+												add(fm, path, name, text.textValue(), chinese);
 											}
 
 											if (code == 102) {
@@ -66,11 +65,11 @@ public class MapFileService implements IJsonFileService {
 													int m = 0;
 													for (JsonNode param : params) {
 														if (param != null && !param.isNull()) {
-															fm.add("$.events[" + i + "].pages[" + j + "].list[" + k
-																	+ "].parameters[0][" + m + "]",
-																	new SectionInfo(param.textValue(),
-																			"事件" + i + "“" + eventName + "”的" + j + "页"
-																					+ k + "行选择的第" + m + "个选项"));
+															String path = "$.events[" + i + "].pages[" + j + "].list["
+																	+ k + "].parameters[0][" + m + "]";
+															String name = "事件" + i + "“" + eventName + "”的" + j + "页"
+																	+ k + "行选择的第" + m + "个选项";
+															add(fm, path, name, param.textValue(), chinese);
 														}
 														m++;
 													}
@@ -83,11 +82,11 @@ public class MapFileService implements IJsonFileService {
 												JsonNode params = l.get("parameters");
 												JsonNode index = params.get(0);
 												JsonNode text = params.get(1);
-												fm.add("$.events[" + i + "].pages[" + j + "].list[" + k
-														+ "].parameters[1]",
-														new SectionInfo(text.textValue(),
-																"事件" + i + "“" + eventName + "”的" + j + "页" + k
-																		+ "行选择的第" + index + "个选项，需与前面的选项翻译一致！"));
+												String path = "$.events[" + i + "].pages[" + j + "].list[" + k
+														+ "].parameters[1]";
+												String name = "事件" + i + "“" + eventName + "”的" + j + "页" + k + "行选择的第"
+														+ index + "个选项，需与前面的选项翻译一致！";
+												add(fm, path, name, text.textValue(), chinese);
 											}
 
 										}

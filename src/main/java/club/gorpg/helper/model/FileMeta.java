@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -228,13 +229,28 @@ public class FileMeta implements Serializable {
 			this.trans = trans;
 		}
 
-		public SectionInfo(String foreignContent, String position) {
+		public SectionInfo(String foreignContent, String transContent, String position) {
 			super();
+			this.position = position;
 			this.foreignContent = foreignContent;
 			this.foreignWords = StringUtils.length(foreignContent);
-			this.transWords = 0;
-			this.trans = StringUtils.isBlank(foreignContent);
-			this.position = position;
+			if (foreignWords == 0) {
+				// 日文长度为0，标记已翻译
+				this.transWords = 0;
+				this.trans = true;
+				return;
+			}
+
+			if (Objects.equals(foreignContent, transContent)) {
+				// 中文和日文一致，则表示没有翻译
+				this.trans = false;
+				this.transWords = 0;
+			} else {
+				// 中日文不一致，标记已翻译
+				this.trans = true;
+				this.transWords = StringUtils.length(transContent);
+				this.transContent = transContent;
+			}
 		}
 
 		public String getPosition() {

@@ -8,7 +8,7 @@ import club.gorpg.helper.model.GameMeta;
 
 public interface IFileTemplateService {
 
-	public List<FileMeta> handle(String fileName, Path path);
+	public List<FileMeta> handle(String fileName, Path path, Path chinesePath);
 
 	public void aferHandle(GameMeta gm, String fileName, Path path);
 }
