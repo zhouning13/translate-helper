@@ -24,7 +24,7 @@ public class MapFileService extends AbstractFileService {
 		return NumberUtils.isDigits(mapNumber);
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese) {
+	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode tn, DocumentContext chinese) {
 		String mapNumber = StringUtils.substringBetween(fileName, "data/Map", ".json");
 		FileMeta fm = new FileMeta(fileName, FileIcon.map, "地图" + mapNumber);
 

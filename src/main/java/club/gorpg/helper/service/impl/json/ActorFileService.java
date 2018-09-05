@@ -21,7 +21,7 @@ public class ActorFileService extends AbstractFileService {
 		return fileName.equals(FILE_NAME);
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese) {
+	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode tn, DocumentContext chinese) {
 		FileMeta fm = new FileMeta(FILE_NAME, FileIcon.actor, "角色");
 
 		int i = 0;

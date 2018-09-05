@@ -21,7 +21,7 @@ public class WeaponFileService extends AbstractFileService {
 		return fileName.equals(FILE_NAME);
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese) {
+	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode tn, DocumentContext chinese) {
 		FileMeta fm = new FileMeta(FILE_NAME, FileIcon.weapon, "武器");
 		int i = 0;
 		for (JsonNode n : tn) {

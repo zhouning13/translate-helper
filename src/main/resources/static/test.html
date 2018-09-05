@@ -26,15 +26,15 @@
 		
 	var decryptArrayBuffer = function(arrayBuffer) {
 		if (!arrayBuffer) return null;
-		var header = new Uint8Array(arrayBuffer, 0, this._headerlength);
+		var header = new Uint8Array(arrayBuffer, 0, 16);
 		
 		var i;
-		var ref = this.SIGNATURE + this.VER + this.REMAIN;
+		var ref = "5250474d56000000" + "000301" + "0000000000";
 		var refBytes = new Uint8Array(16);
-		for (i = 0; i < this._headerlength; i++) {
+		for (i = 0; i < 16; i++) {
 			refBytes[i] = parseInt("0x" + ref.substr(i * 2, 2), 16);
 		}
-		for (i = 0; i < this._headerlength; i++) {
+		for (i = 0; i < 16; i++) {
 			if (header[i] !== refBytes[i]) {
 				throw new Error("Header is wrong");
 			}

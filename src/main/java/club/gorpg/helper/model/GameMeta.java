@@ -24,6 +24,7 @@ public class GameMeta implements Serializable {
 	private int allTransWords;
 	private int allTrans;
 	private double percent;
+	private int[] encryptionKey;
 
 	public String getId() {
 		return id;
@@ -87,6 +88,14 @@ public class GameMeta implements Serializable {
 
 	public void setPercent(double percent) {
 		this.percent = percent;
+	}
+
+	public int[] getEncryptionKey() {
+		return encryptionKey;
+	}
+
+	public void setEncryptionKey(int[] encryptionKey) {
+		this.encryptionKey = encryptionKey;
 	}
 
 	public Map<String, FileMeta> getFileMap() {

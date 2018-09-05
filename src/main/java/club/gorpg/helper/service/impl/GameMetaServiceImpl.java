@@ -146,9 +146,8 @@ public class GameMetaServiceImpl implements IGameMetaService {
 					// 逐个文件寻求处理器模板。
 					for (IFileTemplateService service : fileTemplateServices) {
 						String fileName = gameWWWFolder.relativize(path).toString().replaceAll("\\\\", "/");
-						List<FileMeta> fms = service.handle(fileName, path, chinesePath);
+						List<FileMeta> fms = service.handle(gameMeta, fileName, path, chinesePath);
 						if (fms != null) {
-							System.out.println();
 							fms.forEach(f -> {
 								f.recount();
 								fileMap.put(f.getFileName(), f);
@@ -160,12 +159,14 @@ public class GameMetaServiceImpl implements IGameMetaService {
 			// 二轮扫描
 			Files.walk(gameForeignFolder).sorted().forEach(path -> {
 				if (!Files.isDirectory(path)) {
+					Path chinesePath = gameChineseFolder.resolve(gameForeignFolder.relativize(path));
 					for (IFileTemplateService service : fileTemplateServices) {
 						String fileName = gameWWWFolder.relativize(path).toString().replaceAll("\\\\", "/");
-						service.aferHandle(gameMeta, fileName, path);
+						service.aferHandle(gameMeta, fileName, path, chinesePath);
 					}
 				}
 			});
+			
 
 		} catch (IOException e) {
 			throw new TranslateException("初始化失败，进度文件被其他文件夹占据！");

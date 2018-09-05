@@ -11,7 +11,7 @@ import club.gorpg.helper.model.GameMeta;
 public interface IJsonFileService {
 	public boolean accept(String fileName);
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese);
+	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode tn, DocumentContext chinese);
 
 	public void afterHandle(GameMeta gm, JsonNode tn);
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 import club.gorpg.helper.model.FileIcon;
 import club.gorpg.helper.model.FileMeta;
@@ -24,9 +25,24 @@ public class SystemFileService extends AbstractFileService {
 		return fileName.equals(FILE_NAME);
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode root, DocumentContext chinese) {
+	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode root, DocumentContext chinese) {
 		FileMeta fm = new FileMeta(FILE_NAME, FileIcon.system, "系统");
-
+		JsonNode encryptionKey = root.get("encryptionKey");
+		if (encryptionKey != null && !encryptionKey.isNull()) {
+			String strKey = encryptionKey.textValue();
+			if (strKey != null && strKey.length() == 32) {
+				int[] arr = new int[16];
+				for (int i = 0; i < 16; i++) {
+					String k = strKey.substring(i * 2, i * 2 + 2);
+					arr[i] = Short.parseShort(k, 16);
+				}
+				gm.setEncryptionKey(arr);
+			}
+		}
+		chinese.set(JsonPath.compile("$.hasEncryptedAudio"), false);
+		chinese.set(JsonPath.compile("$.hasEncryptedImages"), false);
+		chinese.delete(JsonPath.compile("$.encryptionKey"));
+		
 		JsonNode terms = root.get("terms");
 		if (terms != null && !terms.isNull()) {
 			JsonNode messages = terms.get("messages");

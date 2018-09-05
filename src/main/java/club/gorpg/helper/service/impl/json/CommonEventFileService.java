@@ -43,7 +43,7 @@ public class CommonEventFileService extends AbstractFileService {
 		return fm;
 	}
 
-	public List<FileMeta> getFileMeta(String fileName, JsonNode tn, DocumentContext chinese) {
+	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode tn, DocumentContext chinese) {
 		List<FileMeta> fms = new ArrayList<>();
 		FileMeta fm = null;
 		int i = 0;
