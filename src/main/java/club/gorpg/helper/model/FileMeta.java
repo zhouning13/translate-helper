@@ -88,7 +88,7 @@ public class FileMeta implements Serializable {
 	}
 
 	public String getTempIcon() {
-		return template.getIcon();
+		return template == null ? null : template.getIcon();
 	}
 
 	public void setTempIcon(String tempIcon) {
