@@ -26,6 +26,7 @@ public class SystemFileService extends AbstractFileService {
 	}
 
 	public List<FileMeta> getFileMeta(GameMeta gm, String fileName, JsonNode root, DocumentContext chinese) {
+		// 准备密钥
 		FileMeta fm = new FileMeta(FILE_NAME, FileIcon.system, "系统");
 		JsonNode encryptionKey = root.get("encryptionKey");
 		if (encryptionKey != null && !encryptionKey.isNull()) {
@@ -42,7 +43,12 @@ public class SystemFileService extends AbstractFileService {
 		chinese.set(JsonPath.compile("$.hasEncryptedAudio"), false);
 		chinese.set(JsonPath.compile("$.hasEncryptedImages"), false);
 		chinese.delete(JsonPath.compile("$.encryptionKey"));
-		
+
+		// 准备游戏名
+		gm.setFname(root.get("gameTitle").textValue());
+		gm.setCname(chinese.read("$.gameTitle", String.class));
+
+		// 准备terms
 		JsonNode terms = root.get("terms");
 		if (terms != null && !terms.isNull()) {
 			JsonNode messages = terms.get("messages");

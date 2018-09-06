@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
@@ -23,9 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import club.gorpg.helper.exceptions.TranslateException;
@@ -93,27 +92,10 @@ public class GameMetaServiceImpl implements IGameMetaService {
 				throw new TranslateException("初始化失败，进度文件读取失败！");
 			}
 		} else {
-			try {
-				// 没有meta文件，根据 game_list.json 生成新meta
-				GameListMeta gameListMeta = om.readValue(ResourceUtils.getFile(basePath + "game_list.json"),
-						GameListMeta.class);
-				SingleGameMeta sgm = gameListMeta.getGame().get(gameId);
-
-				gameMeta = new GameMeta();
-				gameMeta.setId(gameId);
-				gameMeta.setFileMap(new HashMap<>());
-				gameMeta.setTree(new ArrayList<>());
-				gameMeta.setCname(sgm.getCname());
-				gameMeta.setFname(sgm.getFname());
-			} catch (JsonParseException e) {
-				throw new TranslateException("初始化失败，基础文件格式异常，请联系 冷凝沙漠 QQ:25817014！");
-			} catch (JsonMappingException e) {
-				throw new TranslateException("初始化失败，基础文件格式异常，请联系 冷凝沙漠 QQ:25817014！");
-			} catch (FileNotFoundException e) {
-				throw new TranslateException("初始化失败，基础文件不存在！");
-			} catch (IOException e) {
-				throw new TranslateException("初始化失败，基础文件读取失败！");
-			}
+			gameMeta = new GameMeta();
+			gameMeta.setId(gameId);
+			gameMeta.setFileMap(new HashMap<>());
+			gameMeta.setTree(new ArrayList<>());
 		}
 
 		try {
@@ -156,7 +138,32 @@ public class GameMetaServiceImpl implements IGameMetaService {
 					}
 				}
 			});
-			// 二轮扫描
+			// 更新游戏名字到game_list.json文件
+			boolean modifyGameList = false;
+			File gameListFile = ResourceUtils.getFile(basePath + "game_list.json");
+			GameListMeta gameListMeta = om.readValue(gameListFile, GameListMeta.class);
+			SingleGameMeta sgm = gameListMeta.getGame().get(gameId);
+			if (sgm == null) {
+				sgm = new SingleGameMeta();
+				sgm.setId(gameId);
+				gameListMeta.getGame().put(gameId, sgm);
+				gameListMeta.getSort().add(gameId);
+				modifyGameList = true;
+			}
+			if (!Objects.equals(sgm.getCname(), gameMeta.getCname())) {
+				modifyGameList = true;
+			}
+			sgm.setCname(gameMeta.getCname());
+			sgm.setFname(gameMeta.getFname());
+
+			if (!Objects.equals(sgm.getPercent(), gameMeta.getPercent())) {
+				modifyGameList = true;
+			}
+			sgm.setPercent(gameMeta.getPercent());
+			if (modifyGameList) {
+				om.writerWithDefaultPrettyPrinter().writeValue(gameListFile, gameListMeta);
+			}
+			// 第二轮扫描
 			Files.walk(gameForeignFolder).sorted().forEach(path -> {
 				if (!Files.isDirectory(path)) {
 					Path chinesePath = gameChineseFolder.resolve(gameForeignFolder.relativize(path));
@@ -166,7 +173,6 @@ public class GameMetaServiceImpl implements IGameMetaService {
 					}
 				}
 			});
-			
 
 		} catch (IOException e) {
 			throw new TranslateException("初始化失败，进度文件被其他文件夹占据！");
