@@ -45,8 +45,10 @@ public class SystemFileService extends AbstractFileService {
 		chinese.delete(JsonPath.compile("$.encryptionKey"));
 
 		// 准备游戏名
-		gm.setFname(root.get("gameTitle").textValue());
+		String gameTitle = root.get("gameTitle").textValue();
+		gm.setFname(gameTitle);
 		gm.setCname(chinese.read("$.gameTitle", String.class));
+		add(fm, "$.gameTitle", "游戏名称", gameTitle, chinese);
 
 		// 准备terms
 		JsonNode terms = root.get("terms");
